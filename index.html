@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bank product by Ermakov</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Темная тема (по умолчанию) */
+    :root {
+      --bg-main: #0a0a0c;
+      --bg-card: #121216;
+      --bg-card-hover: #181820;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(255, 255, 255, 0.25);
+      --text-primary: #ffffff;
+      --text-secondary: #a1a1aa;
+      --accent-main: #ffffff; /* Цвет кнопок и активных элементов */
+      --accent-text: #000000; /* Текст на кнопках */
+      --accent-glow: rgba(255, 255, 255, 0.12);
+      --badge-bg: rgba(255, 255, 255, 0.06);
+      --modal-bg: #141418;
+      --icon-bg: #222;
+      --glow-gradient: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0) 70%);
+    }
+
+    /* Светлая тема */
+    body.light-theme {
+      --bg-main: #f4f4f5;
+      --bg-card: #ffffff;
+      --bg-card-hover: #fafafa;
+      --border-color: rgba(0, 0, 0, 0.08);
+      --border-accent: rgba(0, 0, 0, 0.25);
+      --text-primary: #09090b;
+      --text-secondary: #71717a;
+      --accent-main: #09090b;
+      --accent-text: #ffffff;
+      --accent-glow: rgba(0, 0, 0, 0.1);
+      --badge-bg: rgba(0, 0, 0, 0.04);
+      --modal-bg: #ffffff;
+      --icon-bg: #f4f4f5;
+      --glow-gradient: radial-gradient(circle, rgba(0, 0, 0, 0.03) 0%, rgba(255, 255, 255, 0) 70%);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.5;
+      overflow-x: hidden;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .bg-glow {
+      position: fixed;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 500px;
+      background: var(--glow-gradient);
+      pointer-events: none;
+      z-index: 0;
+      transition: background 0.3s ease;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(16px);
+      background: rgba(var(--bg-main), 0.75);
+      border-bottom: 1px solid var(--border-color);
+      padding: 16px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .logo {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      text-transform: uppercase;
+      color: var(--text-primary);
+    }
+
+    .logo span {
+      color: var(--text-secondary);
+      font-weight: 400;
+      font-size: 0.9rem;
+      margin-left: 8px;
+    }
+
+    .theme-toggle {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.2s ease;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--border-accent);
+      transform: scale(1.05);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 20px 100px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      margin-bottom: 16px;
+    }
+
+    /* Элементы управления (Поиск и Категории) */
+    .controls-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .search-box {
+      width: 100%;
+      max-width: 500px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 14px 20px 14px 44px;
+      border-radius: 30px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-main);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      pointer-events: none;
+    }
+
+    .categories {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .cat-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 10px 18px;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .cat-btn:hover, .cat-btn.active {
+      background: var(--accent-main);
+      color: var(--accent-text);
+      border-color: var(--accent-main);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    /* Сетка офферов */
+    .offers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .offer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .offer-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-accent);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08), 0 0 20px var(--accent-glow);
+      background: var(--bg-card-hover);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .bank-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .bank-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: var(--icon-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.2rem;
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+    }
+
+    .offer-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.2;
+      margin-bottom: 2px;
+    }
+
+    .tag {
+      background: var(--badge-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      font-size: 0.7rem;
+      padding: 4px 8px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    .offer-features {
+      margin: 16px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .feature-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      border-bottom: 1px dashed var(--border-color);
+      padding-bottom: 6px;
+    }
+
+    .feature-label { color: var(--text-secondary); }
+    .feature-value { font-weight: 600; color: var(--text-primary); }
+
+    .card-footer {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .btn-apply {
+      flex: 1;
+      background: var(--accent-main);
+      color: var(--accent-text);
+      border: none;
+      padding: 10px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      transition: transform 0.1s ease, opacity 0.2s ease;
+    }
+
+    .btn-apply:hover {
+      opacity: 0.9;
+      transform: scale(1.02);
+    }
+
+    /* Модальное окно */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: var(--modal-bg);
+      border: 1px solid var(--border-accent);
+      border-radius: 24px;
+      width: 90%;
+      max-width: 500px;
+      padding: 32px;
+      position: relative;
+      transform: scale(0.95) translateY(20px);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+
+    .modal-overlay.active .modal {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px; right: 16px;
+      background: var(--badge-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      transition: all 0.2s ease;
+    }
+
+    .modal-close:hover {
+      background: var(--accent-main);
+      color: var(--accent-text);
+    }
+
+    .modal-header {
+      display: flex; align-items: center; gap: 16px; margin-bottom: 24px;
+    }
+
+    .modal-bank-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      background: var(--icon-bg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; font-weight: 700;
+      border: 1px solid var(--border-color);
+    }
+
+    .modal-title { font-size: 1.3rem; font-weight: 700; color: var(--text-primary); line-height: 1.2;}
+    .modal-tag { color: var(--text-secondary); font-size: 0.85rem; margin-top: 4px; }
+
+    .modal-info-box {
+      background: var(--badge-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .info-item p:first-child { color: var(--text-secondary); font-size: 0.8rem; }
+    .info-item p:last-child { font-weight: 700; font-size: 1.1rem; margin-top: 2px; color: var(--text-primary);}
+
+    .modal-description { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 20px;}
+
+    .btn-modal-apply {
+      display: block;
+      background: var(--accent-main);
+      color: var(--accent-text);
+      text-align: center;
+      padding: 14px;
+      border-radius: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+    .btn-modal-apply:hover { opacity: 0.9; transform: translateY(-2px); }
+    
+    .no-results {
+      text-align: center;
+      grid-column: 1 / -1;
+      color: var(--text-secondary);
+      padding: 40px;
+      font-size: 1.1rem;
+    }
+
+    @media (max-width: 600px) {
+      header { padding: 16px 20px; }
+      .hero h1 { font-size: 2rem; }
+      .modal { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-glow"></div>
+
+  <header>
+    <div class="logo">BANK PRODUCT <span>by Ermakov</span></div>
+    <button class="theme-toggle" id="themeToggle" title="Переключить тему">☀️</button>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h1>Все финансовые офферы в одном месте</h1>
+    </section>
+
+    <div class="controls-wrapper">
+      <!-- Поиск -->
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="searchInput" placeholder="Найти банк или карту..." />
+      </div>
+
+      <!-- Категории -->
+      <div class="categories">
+        <button class="cat-btn active" data-cat="all">Все офферы</button>
+        <button class="cat-btn" data-cat="cards">Дебетовые карты</button>
+        <button class="cat-btn" data-cat="credit">Кредитные карты</button>
+        <button class="cat-btn" data-cat="rko">РКО</button>
+        <button class="cat-btn" data-cat="reg">Регистрация бизнеса</button>
+        <button class="cat-btn" data-cat="mfo">МФО и Займы</button>
+      </div>
+    </div>
+
+    <!-- Сетка офферов -->
+    <div class="offers-grid" id="offersGrid"></div>
+  </main>
+
+  <!-- Модальное окно -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <button class="modal-close" id="modalClose">&times;</button>
+      <div class="modal-header">
+        <div class="modal-bank-icon" id="modalIcon">Т</div>
+        <div>
+          <div class="modal-title" id="modalTitle">Название</div>
+          <div class="modal-tag" id="modalTag">Категория</div>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="modal-info-box">
+          <div class="info-item">
+            <p id="modalStat1Label">Параметр 1</p>
+            <p id="modalStat1">Значение 1</p>
+          </div>
+          <div class="info-item">
+            <p id="modalStat2Label">Параметр 2</p>
+            <p id="modalStat2">Значение 2</p>
+          </div>
+        </div>
+        <p class="modal-description" id="modalDesc">Описание продукта...</p>
+        <a href="#" class="btn-modal-apply" id="modalLink" target="_blank">Оформить заявку</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Инициализация темы
+    const themeBtn = document.getElementById('themeToggle');
+    if (localStorage.getItem('theme') === 'light') {
+      document.body.classList.add('light-theme');
+      themeBtn.innerHTML = '🌙';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      document.body.classList.toggle('light-theme');
+      const isLight = document.body.classList.contains('light-theme');
+      themeBtn.innerHTML = isLight ? '🌙' : '☀️';
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    });
+
+    // --- БАЗА ДАННЫХ ВСЕХ ОФФЕРОВ ---
+    const rawData = {
+      cards: ['Т-Банк Black', 'Альфа-Карта (Альфа-Банк)', 'СберКарта (Сбербанк)', 'Дебетовая карта ВТБ', 'Умная карта (Газпромбанк)', 'ОТП Карта (ОТП Банк)', 'Моя карта (Почта Банк)', 'Твой кешбэк (Промсвязьбанк)', 'МТС Деньги (МТС Банк)', 'Халва (Совкомбанк, в дебетовом режиме)', 'Alfa Only (Альфа-Банк Премиум)', 'Т-Банк Black Premium', 'ВТБ Привилегия', 'Газпромбанк Премиум', 'Яндекс Карта (Яндекс Банк)', 'Ozon Карта (Ozon Банк)', 'Т-Банк All Games', 'Альфа Travel', 'Своя карта (Россельхозбанк)', 'Локо-Ярко (Локо-Банк)', 'Ак Барс Карта Мир', 'УБРиР My Life', 'Т-Банк Джуниор', 'Альфа-Карта Детская', 'СберКарта Молодежная'],
+      
+      credit: ['Т-Банк Платинум', 'Альфа-Банк «365 дней без %»', 'Кредитная карта «Возможностей» (ВТБ)', 'СберКарта Кредитная (Сбербанк)', 'Газпромбанк «180 дней без %»', 'МТС Cashback Кредитная (МТС Банк)', 'Халва (Совкомбанк, карта рассрочки)', 'Своя Кредитка (Свой Банк)', 'Уралсиб «120 дней без процентов»', 'Кредитная карта My Life (УБРиР)', 'ОТП Банк «120 дней без %»', 'Ренессанс Банк «2 года без %»', 'АТБ «Универсальная» (Азиатско-Тихоокеанский Банк)', 'Кредитная карта ПСБ «100 дней»', 'Т-Банк Drive Кредитная', 'Альфа-Банк «Travel Кредитная»', 'Кредитная карта «Мир» (Банк Зенит)', 'Т-Банк All Airlines', 'Кредитная карта Росбанк (в составе группы Т-Банк)', 'Совкомбанк «Суперхоум»', 'Кредитная карта «120 дней» (Хоум Банк)', 'Кредитная карта Новикомбанк', 'Кредитная карта Банка «Санкт-Петербург»', 'Кредитная карта Металлинвестбанк', 'Кредитная карта Локо-Банк'],
+      
+      rko: ['Точка Банк (РКО)', 'Альфа-Банк «Ноль за обслуживание»', 'Т-Бизнес (Т-Банк РКО)', 'СберБизнес (Сбербанк РКО)', 'ВТБ «Малый бизнес» (РКО)', 'Модульбанк (РКО)', 'Газпромбанк Бизнес', 'ПСБ «Старт» (Промсвязьбанк РКО)', 'МТС Банк РКО', 'Уралсиб Деловая жизнь', 'Совкомбанк «Успех» (РКО)', 'Бланк Банк (РКО)', 'ОТП Банк «Легкий старт»', 'Локо-Банк «Драйв» (РКО)', 'Ozon Банк Бизнес (РКО)'],
+      
+      reg: ['Регистрация бизнеса от Точка Банка', 'Регистрация ИП/ООО от Т-Банка', 'Сервис регистрации бизнеса Альфа-Банка', 'Регистрация бизнеса от Сбера', 'Регистрация ИП/ООО от ВТБ', 'Сервис «Мое дело» (Регистрация бизнеса)', 'Контур.Старт (СКБ Контур)', 'Регистрация бизнеса от ПСБ', 'Деловая среда (от Сбербанка)'],
+      
+      mfo: ['еКапуста', 'Webbankir', 'MoneyMan (Манимен)', 'Лайм-Займ', 'Быстроденьги', 'Ezaem (Езаем)', 'Moneza (Монеза)', 'МигКредит', 'Срочноденьги', 'Joymoney (Джой Мани)', 'Веб-займ', 'Турбозайм', 'Credit7', 'OneClickMoney', 'ДеньгиСразу', 'Белка Кредит', 'НадоДенег', 'Адонис (Альфа-Деньги)', 'Умные Наличные']
+    };
+
+    // Настройки категорий для генерации данных
+    const catConfig = {
+      cards:  { tag: 'Дебетовая карта', s1L: 'Обслуживание', s1: '0 ₽', s2L: 'Кэшбэк', s2: 'до 30%', desc: 'Оформите дебетовую карту с бесплатным обслуживанием и получайте кэшбэк за повседневные покупки. Быстрая бесплатная доставка курьером.' },
+      credit: { tag: 'Кредитная карта', s1L: 'Беспроцентный период', s1: 'до 120 дней', s2L: 'Кредитный лимит', s2: 'до 1 млн ₽', desc: 'Удобная кредитная карта для любых покупок. Снимайте наличные и переводите без комиссии в рамках льготного периода.' },
+      rko:    { tag: 'РКО для бизнеса', s1L: 'Открытие счета', s1: '0 ₽', s2L: 'Обслуживание', s2: 'от 0 ₽/мес', desc: 'Надежное расчетно-кассовое обслуживание для ИП и ООО. Бесплатные переводы контрагентам и удобный интернет-банк.' },
+      reg:    { tag: 'Регистрация бизнеса', s1L: 'Госпошлина', s1: '0 ₽', s2L: 'Срок регистрации', s2: 'от 1 до 3 дней', desc: 'Откройте ИП или ООО онлайн без визита в налоговую. Подготовим все документы бесплатно и поможем выбрать систему налогообложения.' },
+      mfo:    { tag: 'Займ онлайн', s1L: 'Первый займ', s1: 'под 0%', s2L: 'Одобрение', s2: '98% за 5 минут', desc: 'Моментальные займы на карту без проверок и звонков. Деньги поступят сразу после одобрения заявки, нужен только паспорт.' }
+    };
+
+    // Генерация массива объектов из строк
+    let allOffers = [];
+    let idCounter = 1;
+
+    for (const [catKey, namesArray] of Object.entries(rawData)) {
+      const conf = catConfig[catKey];
+      namesArray.forEach(name => {
+        // Достаем первую русскую/английскую букву для иконки
+        const iconMatch = name.match(/[А-Яа-яA-Za-z]/);
+        const icon = iconMatch ? iconMatch[0].toUpperCase() : 'B';
+        
+        allOffers.push({
+          id: idCounter++,
+          category: catKey,
+          title: name,
+          icon: icon,
+          tag: conf.tag,
+          stat1Label: conf.s1L,
+          stat1: conf.s1,
+          stat2Label: conf.s2L,
+          stat2: conf.s2,
+          desc: conf.desc,
+          link: '#'
+        });
+      });
+    }
+
+    // --- ЛОГИКА ИНТЕРФЕЙСА ---
+    const offersGrid = document.getElementById('offersGrid');
+    const searchInput = document.getElementById('searchInput');
+    let currentCategory = 'all';
+    let searchQuery = '';
+
+    function renderOffers() {
+      offersGrid.innerHTML = '';
+      
+      const filtered = allOffers.filter(o => {
+        const matchCat = currentCategory === 'all' || o.category === currentCategory;
+        const matchSearch = o.title.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchCat && matchSearch;
+      });
+
+      if (filtered.length === 0) {
+        offersGrid.innerHTML = '<div class="no-results">По вашему запросу ничего не найдено 🤔</div>';
+        return;
+      }
+
+      filtered.forEach(offer => {
+        const card = document.createElement('div');
+        card.className = 'offer-card';
+        card.onclick = () => openModal(offer);
+
+        card.innerHTML = `
+          <div>
+            <div class="card-header">
+              <div class="bank-badge">
+                <div class="bank-icon">${offer.icon}</div>
+                <div>
+                  <div class="offer-title">${offer.title}</div>
+                </div>
+              </div>
+              <span class="tag">${offer.tag}</span>
+            </div>
+            
+            <div class="offer-features">
+              <div class="feature-item">
+                <span class="feature-label">${offer.stat1Label}</span>
+                <span class="feature-value">${offer.stat1}</span>
+              </div>
+              <div class="feature-item">
+                <span class="feature-label">${offer.stat2Label}</span>
+                <span class="feature-value">${offer.stat2}</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button class="btn-apply" onclick="event.stopPropagation(); openModalById(${offer.id})">Подробнее</button>
+          </div>
+        `;
+        offersGrid.appendChild(card);
+      });
+    }
+
+    // Слушатели поиска и фильтров
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value;
+      renderOffers();
+    });
+
+    document.querySelectorAll('.cat-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        currentCategory = e.target.dataset.cat;
+        renderOffers();
+      });
+    });
+
+    // --- МОДАЛЬНОЕ ОКНО ---
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalClose = document.getElementById('modalClose');
+
+    function openModal(offer) {
+      document.getElementById('modalIcon').innerText = offer.icon;
+      document.getElementById('modalTitle').innerText = offer.title;
+      document.getElementById('modalTag').innerText = offer.tag;
+      document.getElementById('modalStat1Label').innerText = offer.stat1Label;
+      document.getElementById('modalStat1').innerText = offer.stat1;
+      document.getElementById('modalStat2Label').innerText = offer.stat2Label;
+      document.getElementById('modalStat2').innerText = offer.stat2;
+      document.getElementById('modalDesc').innerText = offer.desc;
+      
+      modalOverlay.classList.add('active');
+    }
+
+    function openModalById(id) {
+      const offer = allOffers.find(o => o.id === id);
+      if (offer) openModal(offer);
+    }
+
+    function closeModal() {
+      modalOverlay.classList.remove('active');
+    }
+
+    modalClose.addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+    // Первичный рендер
+    renderOffers();
+  </script>
+</body>
+</html>
